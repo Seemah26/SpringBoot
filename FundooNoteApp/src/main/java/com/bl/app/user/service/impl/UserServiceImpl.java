@@ -43,17 +43,7 @@ public class UserServiceImpl implements UserService {
 		} else
 			return "invalid User Details";
 
-		/*
-		 * List<User> usrlst = userRep.findByEmailAndPassword(user.getEmail(),
-		 * user.getPassword()); System.out.println("SIZE : " + usrlst.size());
-		 * 
-		 * if (usrlst.size() > 0 && usrlst != null) {
-		 * System.out.println("Sucessful login");
-		 * 
-		 * return "Welcome " + usrlst.get(0).getName(); } else {
-		 * System.out.println("wrong emailid or password"); return
-		 * "wrong emailid or password"; }
-		 */
+		
 	}
 	public String securePassword(User password) {
 		String orgpassword=password.getPassword();
@@ -101,7 +91,7 @@ public class UserServiceImpl implements UserService {
 		Date now = new Date(nowMillis);
 
 		JwtBuilder builder = Jwts.builder().setSubject(subject).setIssuedAt(now).signWith(SignatureAlgorithm.HS256,
-				secretKey);
+				  secretKey); 
 
 		return builder.compact();
 
