@@ -10,10 +10,8 @@ import com.bl.app.user.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	public User save(User user);
-
-	// List<User> findByEmail(String s);
-
 	List<User> findByEmailAndPassword(String email, String password);
+
+	
 
 }

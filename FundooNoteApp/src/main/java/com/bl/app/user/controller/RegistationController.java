@@ -11,14 +11,13 @@ import com.bl.app.user.model.User;
 import com.bl.app.user.service.UserService;
 
 @RestController
-@ComponentScan("com.bl.app.service")
 public class RegistationController {
 
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public User createStudent(@RequestBody User user) {
+	public User createUser(@RequestBody User user) {
 
 		return userService.userReg(user);
 	}

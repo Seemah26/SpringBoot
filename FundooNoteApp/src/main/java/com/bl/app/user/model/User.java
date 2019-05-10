@@ -1,6 +1,5 @@
 package com.bl.app.user.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,25 +8,20 @@ import javax.persistence.Table;
 @Table(name = "user")
 public class User {
 	@Id
-	@Column(name = "id")
+	
 	private long id;
 
-	@Column(name = "name")
+	
 	private String name;
 
-	@Column(name = "email")
 	private String email;
 
-	@Column(name = "password")
 	private String password;
 
-	@Column(name = "phonenumber")
 	private String phonenumber;
 
-	@Column(name = "activestatus")
 	private String status;
 
-	@Column(name = "image")
 	private String image;
 
 	public User() {

@@ -15,7 +15,7 @@ import com.bl.app.model.Studentinfo;
 import com.bl.app.service.StudentService;
 
 @RestController
-@ComponentScan("com.bl.app.service")
+//@ComponentScan("com.bl.app.service")
 public class StudentController {
 
 	@Autowired

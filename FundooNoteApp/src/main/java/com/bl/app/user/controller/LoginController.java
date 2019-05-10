@@ -11,16 +11,14 @@ import com.bl.app.user.model.User;
 import com.bl.app.user.service.UserService;
 
 @RestController
-@ComponentScan("com.bl.app.user.service")
 public class LoginController {
-	
+
 	@Autowired
 	UserService userService;
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String geteUserByLogin(@RequestBody User user) {
 		
-		System.out.println("I am at Controller");	
 		return userService.login(user);
 		
 			}
