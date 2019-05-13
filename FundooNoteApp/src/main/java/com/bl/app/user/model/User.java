@@ -8,10 +8,9 @@ import javax.persistence.Table;
 @Table(name = "user")
 public class User {
 	@Id
-	
+
 	private long id;
 
-	
 	private String name;
 
 	private String email;
@@ -23,6 +22,8 @@ public class User {
 	private String status;
 
 	private String image;
+
+	private String resetToken;
 
 	public User() {
 		super();
@@ -89,4 +90,13 @@ public class User {
 	public void setImage(String image) {
 		this.image = image;
 	}
+
+	public String getResetToken() {
+		return resetToken;
+	}
+
+	public void setResetToken(String resetToken) {
+		this.resetToken = resetToken;
+	}
+
 }

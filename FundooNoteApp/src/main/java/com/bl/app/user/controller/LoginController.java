@@ -1,17 +1,18 @@
 package com.bl.app.user.controller;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bl.app.user.model.User;
+import com.bl.app.user.service.EmailService;
 import com.bl.app.user.service.UserService;
 
 @RestController
@@ -19,33 +20,34 @@ public class LoginController {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
-    private JavaMailSender sender;
-	
+	private EmailService emailService;
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String geteUserByLogin(@RequestBody User user) {
-		
+
 		return userService.login(user);
-		
-			}
+
+	}
 	
 
-    @RequestMapping("/sendMail")
-    public String sendMail() {
-        MimeMessage message = sender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+	@RequestMapping(value = "/forgotpassword", method = RequestMethod.POST)
+	public String processForgotPasswordForm(@RequestBody User user, HttpServletRequest request) {
 
-        try {
-            helper.setTo("sonianu1926@gmail.com");
-            helper.setText("Greetings :)");
-            helper.setSubject("Mail From Spring Boot");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return "Error while sending mail ..";
-        }
-        sender.send(message);
-        return "Mail Sent Success!";
-    }
+		emailService.forgotPassword(user.getEmail(), request);
+
+		return "Sending mai,hello:-)";
+	}
 	
+	@RequestMapping(value = "/resetpassword/{token}", method = RequestMethod.PUT)
+	public ResponseEntity<String> resetPassword(@RequestBody User user, @PathVariable String token, HttpServletRequest request) {
+		User updatedUser =emailService.resetPassword(user, token, request); 
+		if (updatedUser != null) {
+			return new ResponseEntity<String>("Your password has been reset", HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("Your password couldn't be reset", HttpStatus.CONFLICT);
+	}
 }
+
+
