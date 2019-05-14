@@ -4,7 +4,6 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,15 +16,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.bl.app.model.UserInfo;
 import com.bl.app.repository.UserRepository;
 import com.bl.app.service.UserService;
+import com.bl.app.utility.JsonToken;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
@@ -36,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private JavaMailSender sender;
+	
+	 @Autowired
+	 private JsonToken jsontoken;
 
 	String secretKey;
 	String subject;
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         if (userList.size() > 0 && userList != null) {
             System.out.println("Sucessful login");
-            return jwtToken(password, userList.get(0).getId());
+            return jsontoken.jwtToken(password, userList.get(0).getId());
         } else
             System.out.println("wrong Id or password");
         return "wrong id or password";
@@ -65,7 +64,8 @@ public class UserServiceImpl implements UserService {
             System.out.println("Sucessfull reg");
             //Optional<User> maybeUser = userRep.findById(user.getId());
             
-            String tokenGen = jwtToken("secretKey", user1.get().getId());
+            //String tokenGen = jwtToken("secretKey", user1.get().getId());
+            String tokenGen =jsontoken.jwtToken("secretKey", user1.get().getId());
             
             UserInfo u=user1.get();
             StringBuffer requestUrl = request.getRequestURL();
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserInfo update(String token, UserInfo user) {
-		int varifiedUserId = tokenVerification(token);
+		int varifiedUserId = jsontoken.tokenVerification(token);
 
 		Optional<UserInfo> maybeUser = userRep.findById(varifiedUserId);
 		UserInfo presentUser = maybeUser.map(existingUser -> {
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean delete(String token) {
-		int varifiedUserId = tokenVerification(token);
+		int varifiedUserId = jsontoken.tokenVerification(token);
 		Optional<UserInfo> maybeUser = userRep.findById(varifiedUserId);
 		return maybeUser.map(existingUser -> {
 			userRep.delete(existingUser);
@@ -147,34 +147,6 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	private static final Key secret = MacProvider.generateKey(SignatureAlgorithm.HS256);
-	private static final byte[] secretBytes = secret.getEncoded();
-	private static final String base64SecretBytes = Base64.getEncoder().encodeToString(secretBytes);
-
-	@Override
-	public String jwtToken(String secretKey, int id) {
-		long nowMillis = System.currentTimeMillis();
-		Date now = new Date(nowMillis);
-
-		JwtBuilder builder = Jwts.builder().setSubject(String.valueOf(id)).setIssuedAt(now)
-				.signWith(SignatureAlgorithm.HS256, base64SecretBytes);
-		System.out.println("jwt token :" + builder.compact());
-		String token = builder.compact();
-
-		return token;
-	}
-
-	@Override
-	public int tokenVerification(String token) {
-		// This line will throw an exception if it is not a signed JWS (as expected)
-		if (StringUtils.isEmpty(token)) {
-		}
-		Claims claims = Jwts.parser().setSigningKey(base64SecretBytes).parseClaimsJws(token).getBody();
-		System.out.println("ID******************: " + claims.getSubject());
-		System.out.println("Id is varified :" + claims.getSubject());
-
-		return Integer.parseInt(claims.getSubject());
-	}
 
 	@Override
 	public UserInfo getUserInfoByEmail(String email) {
@@ -185,7 +157,7 @@ public class UserServiceImpl implements UserService {
 	@Async
 	public String sendMail(UserInfo user, HttpServletRequest request,String token) {
 		int id = user.getId();
-		String token1 = jwtToken("secretKey", id);
+		String token1 = jsontoken.jwtToken("secretKey", id);
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 
@@ -235,6 +207,10 @@ public class UserServiceImpl implements UserService {
         
             
     }
+
+
+
+
 
 
 }

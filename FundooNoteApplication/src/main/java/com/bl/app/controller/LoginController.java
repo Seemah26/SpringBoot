@@ -17,12 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bl.app.model.UserInfo;
 import com.bl.app.service.UserService;
+import com.bl.app.utility.JsonToken;
 
 @RestController
 public class LoginController {
 
 	@Autowired
 	UserService userService;
+	
+	 @Autowired
+	 private JsonToken jsontoken;
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String geteUserByLogin(@RequestBody UserInfo user, HttpServletRequest reuest, HttpServletResponse response) {
@@ -57,7 +61,7 @@ public class LoginController {
     	UserInfo userInfo = userService.getUserInfoByEmail(user.getEmail());
 
         if (userInfo != null) {
-            String token = userService.jwtToken("secretKey", userInfo.getId());
+            String token = jsontoken.jwtToken("secretKey", userInfo.getId());
             
             StringBuffer requestUrl = request.getRequestURL();
             System.out.println(requestUrl);
@@ -76,7 +80,7 @@ public class LoginController {
     @RequestMapping(value = "/resetpassword", method = RequestMethod.PUT)
     public void resetPassword(@RequestBody UserInfo user, HttpServletRequest request) {
         // User userInfo=userService.getUserInfoByEmail(user.getEmail());
-        int id = userService.tokenVerification(request.getHeader("token"));
+        int id = jsontoken.tokenVerification(request.getHeader("token"));
 
         if (id != 0) {
 
@@ -108,7 +112,7 @@ public class LoginController {
     public String sendtomail(@RequestBody UserInfo user, HttpServletRequest request) {
     	UserInfo userInfo = userService.getUserInfoByEmail(user.getEmail());
         if (userInfo != null) {
-            String token = userService.jwtToken("secretKey", userInfo.getId());
+            String token = jsontoken.jwtToken("secretKey", userInfo.getId());
             
             StringBuffer requestUrl = request.getRequestURL();
             System.out.println(requestUrl);
@@ -126,7 +130,7 @@ public class LoginController {
 @RequestMapping(value = "/activestatus", method = RequestMethod.PUT)
 public void activestatus( HttpServletRequest request) {
     // User userInfo=userService.getUserInfoByEmail(user.getEmail());
-    int id = userService.tokenVerification(request.getHeader("token"));
+    int id = jsontoken.tokenVerification(request.getHeader("token"));
 
     if (id != 0) {
 
